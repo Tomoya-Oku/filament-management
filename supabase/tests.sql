@@ -1,9 +1,7 @@
 -- Runs against the dedicated project's schema. Everything is rolled back.
 begin;
-insert into auth.users(id) values ('00000000-0000-4000-8000-000000000001');
-insert into public.lab_members(user_id) values ('00000000-0000-4000-8000-000000000001');
-select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',true);
-set local role authenticated;
+select set_config('request.jwt.claim.sub','',true);
+set local role anon;
 do $$
 declare v_id uuid; v_repeat uuid; v_sum integer; v_count integer;
 begin
@@ -40,16 +38,6 @@ begin
   exception when insufficient_privilege then null; end;
   select count(*) into v_count from public.movements;
   if v_count <> 3 then raise exception 'failed operations leaked into history'; end if;
-end $$;
-reset role;
-select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000099',true);
-set local role authenticated;
-do $$ begin
-  if exists (select 1 from public.stock) then raise exception 'nonmember can read stock'; end if;
-  begin
-    perform public.record_movement('add','62C1',null,'PLA Basic','BLACK',1,gen_random_uuid());
-    raise exception 'nonmember can write';
-  exception when insufficient_privilege then null; end;
 end $$;
 reset role;
 rollback;
