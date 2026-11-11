@@ -70,14 +70,15 @@ export async function loadInventory() {
 
 export async function loadCatalog(): Promise<Catalog> {
   try {
-    const [roomRows, materialRows, colorRows, combinations] = await Promise.all([
+    const [roomRows, materialRows, colorRows, combinations, settings] = await Promise.all([
       request<{code:string}[]>('rooms?select=code&active=eq.true&order=display_order'),
       request<{name:string}[]>('materials?select=name&active=eq.true&order=display_order'),
       request<{name:string;hex:string;label_ja:string;label_en:string;label_zh:string}[]>('colors?select=name,hex,label_ja,label_en,label_zh&active=eq.true&order=display_order'),
       request<{material:string;color:string;available:boolean}[]>('material_colors?select=material,color,available'),
+      request<{value_integer:number}[]>('app_settings?select=value_integer&key=eq.low_stock_threshold'),
     ])
     const colors: Color[] = colorRows.map(c => ({ id:c.name, hex:c.hex, ja:c.label_ja, en:c.label_en, zh:c.label_zh }))
-    return { rooms:roomRows.map(r => r.code), materials:materialRows.map(m => m.name), colors, unavailable:combinations.filter(c => !c.available).map(c => `${c.material}::${c.color}`) }
+    return { rooms:roomRows.map(r => r.code), materials:materialRows.map(m => m.name), colors, unavailable:combinations.filter(c => !c.available).map(c => `${c.material}::${c.color}`), lowStockThreshold:settings[0]?.value_integer ?? 1 }
   } catch { return fallbackCatalog }
 }
 
@@ -109,4 +110,9 @@ export async function setCatalogItemActive(kind: 'room' | 'material' | 'color', 
 export async function setCombination(material: string, color: string, available: boolean) {
   if (!isAdmin(currentUser())) throw new ApiError('adminOnly')
   await request('material_colors?on_conflict=material,color', { method:'POST', headers:{ Prefer:'resolution=merge-duplicates,return=minimal' }, body:JSON.stringify({ material, color, available }) })
+}
+
+export async function setLowStockThreshold(value: number) {
+  if (!isAdmin(currentUser())) throw new ApiError('adminOnly')
+  await request('app_settings?key=eq.low_stock_threshold', { method:'PATCH', headers:{ Prefer:'return=minimal' }, body:JSON.stringify({ value_integer:value }) })
 }

@@ -5,7 +5,7 @@ export type Stock = { room: string; material: string; color: string; quantity: n
 export type Movement = { id: string; kind: Operation; room: string; destination: string | null; material: string; color: string; quantity: number; created_at: string }
 export type Entry = { kind: Operation; room: string; destination: string; material: string; color: string; quantity: number }
 export type Color = { id: string; hex: string; ja: string; en: string; zh: string; image?: string | null }
-export type Catalog = { rooms: string[]; materials: string[]; colors: Color[]; unavailable: string[] }
+export type Catalog = { rooms: string[]; materials: string[]; colors: Color[]; unavailable: string[]; lowStockThreshold: number }
 export type ProcurementVote = { id: string; material: string; color: string; quantity: number; created_at: string }
 const color = (id: string, hex: string, ja: string, en: string, zh: string): Color => ({ id, hex, ja, en, zh })
 export const colors: Color[] = [
@@ -64,6 +64,7 @@ export const fallbackCatalog: Catalog = {
   unavailable: Object.entries(restricted).flatMap(([material, available]) =>
     colors.filter(c => !available.includes(c.id)).map(c => `${material}::${c.id}`),
   ),
+  lowStockThreshold: 1,
 }
 
 export function isCombinationAvailable(catalog: Catalog, material: string, colorId: string) {

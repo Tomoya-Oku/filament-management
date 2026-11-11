@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { addCatalogItem, isAdmin, setCatalogItemActive, setCombination, type AuthUser } from '../api'
+import { addCatalogItem, isAdmin, setCatalogItemActive, setCombination, setLowStockThreshold, type AuthUser } from '../api'
 import { isCombinationAvailable, type Catalog } from '../catalog'
 import type { Text } from '../i18n'
 import { Icon } from './Icon'
@@ -10,16 +10,19 @@ export function Admin({ t, user, catalog, refresh, onSignOut }: { t: Text; user:
   const [officialUrl,setOfficialUrl] = useState('')
   const [color,setColor] = useState({name:'',hex:'#c52a2f',ja:'',en:'',zh:''})
   const [matrixMaterial,setMatrixMaterial] = useState(catalog.materials[0] ?? '')
+  const [threshold,setThreshold] = useState(catalog.lowStockThreshold)
   const [message,setMessage] = useState('')
   if (!isAdmin(user)) return null
   async function run(task: () => Promise<void>) { setMessage(''); try { await task(); await refresh(); setMessage('保存しました') } catch { setMessage(t.error) } }
   async function addRoom(event:FormEvent) { event.preventDefault(); await run(() => addCatalogItem('room',{code:room})); setRoom('') }
   async function addMaterial(event:FormEvent) { event.preventDefault(); await run(() => addCatalogItem('material',{name:material,official_url:officialUrl||null})); setMaterial(''); setOfficialUrl('') }
   async function addColor(event:FormEvent) { event.preventDefault(); await run(() => addCatalogItem('color',{name:color.name,hex:color.hex,label_ja:color.ja||color.name,label_en:color.en||color.name,label_zh:color.zh||color.name})); setColor({name:'',hex:'#c52a2f',ja:'',en:'',zh:''}) }
+  async function saveThreshold(event:FormEvent) { event.preventDefault(); await run(() => setLowStockThreshold(threshold)) }
   return <div className="mx-auto max-w-6xl">
     <div className="flex items-start gap-4"><span className="action-icon"><Icon name="settings" /></span><div><h1 className="page-title">{t.adminTitle}</h1><p className="mt-2 text-sm text-neutral-500">{t.adminHelp}</p><p className="mt-1 text-xs text-neutral-400">{user?.email}</p></div><button className="secondary ml-auto" onClick={()=>void onSignOut()}>{t.signOut}</button></div>
     {message && <p className="notice mt-6" role="status">{message}</p>}
-    <div className="mt-8 grid gap-6 lg:grid-cols-3">
+    <section className="admin-section mt-8"><div className="flex flex-wrap items-end gap-5"><div className="flex-1"><h2>{t.lowStockThreshold}</h2><p className="mt-2 text-xs leading-5 text-neutral-500">{t.thresholdHelp}</p></div><form className="flex items-end gap-2" onSubmit={saveThreshold}><label className="field-label"><span className="sr-only">{t.lowStockThreshold}</span><input className="input w-28 text-center font-bold" type="number" min="0" max="99" value={threshold} onChange={e=>setThreshold(e.target.valueAsNumber)} /></label><button className="primary">{t.confirm}</button></form></div></section>
+    <div className="mt-6 grid gap-6 lg:grid-cols-3">
       <section className="admin-section"><h2>{t.room}</h2><form className="mt-4 flex gap-2" onSubmit={addRoom}><input className="input" required value={room} onChange={e=>setRoom(e.target.value)} placeholder="例: 62C1" /><button className="primary">{t.addItem}</button></form><ul className="admin-list">{catalog.rooms.map(item=><li key={item}><span>{item}</span><button onClick={()=>void run(()=>setCatalogItemActive('room',item,false))}>{t.deactivate}</button></li>)}</ul></section>
       <section className="admin-section"><h2>{t.material}</h2><form className="mt-4 space-y-2" onSubmit={addMaterial}><input className="input" required value={material} onChange={e=>setMaterial(e.target.value)} placeholder="PLA Matte" /><input className="input" type="url" value={officialUrl} onChange={e=>setOfficialUrl(e.target.value)} placeholder="https://…" /><button className="primary w-full">{t.addItem}</button></form><ul className="admin-list">{catalog.materials.map(item=><li key={item}><span>{item}</span><button onClick={()=>void run(()=>setCatalogItemActive('material',item,false))}>{t.deactivate}</button></li>)}</ul></section>
       <section className="admin-section"><h2>{t.color}</h2><form className="mt-4 space-y-2" onSubmit={addColor}><div className="flex gap-2"><input className="h-12 w-16 rounded-lg border border-neutral-300 p-1" type="color" value={color.hex} onChange={e=>setColor({...color,hex:e.target.value})} /><input className="input" required value={color.name} onChange={e=>setColor({...color,name:e.target.value})} placeholder="内部ID" /></div><input className="input" value={color.ja} onChange={e=>setColor({...color,ja:e.target.value})} placeholder="日本語名" /><input className="input" value={color.en} onChange={e=>setColor({...color,en:e.target.value})} placeholder="English" /><input className="input" value={color.zh} onChange={e=>setColor({...color,zh:e.target.value})} placeholder="中文" /><button className="primary w-full">{t.addItem}</button></form><ul className="admin-list">{catalog.colors.map(item=><li key={item.id}><span className="flex items-center gap-2"><i style={{backgroundColor:item.hex}} />{item.ja}</span><button onClick={()=>void run(()=>setCatalogItemActive('color',item.id,false))}>{t.deactivate}</button></li>)}</ul></section>

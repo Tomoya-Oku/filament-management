@@ -9,7 +9,8 @@ const actions = [
   { kind:'scanner', icon:'camera', href:'#scanner' },
 ] as const
 
-export function Home({ t, language, stock, movements, catalog, threshold=1 }: { t: Text; language: Language; stock: Stock[]; movements: Movement[]; catalog: Catalog; threshold?:number }) {
+export function Home({ t, language, stock, movements, catalog }: { t: Text; language: Language; stock: Stock[]; movements: Movement[]; catalog: Catalog }) {
+  const threshold=catalog.lowStockThreshold
   const low = stock.filter(item=>item.quantity<=threshold).sort((a,b)=>a.quantity-b.quantity).slice(0,4)
   const records = movements.slice(0,Math.max(1,6-low.length))
   return <>
