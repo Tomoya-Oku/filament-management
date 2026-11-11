@@ -38,7 +38,7 @@ export function InventoryActionModal({ material, color, initialRoom, catalog, st
       <label className="field-label">{action==='set'?t.setQuantity:t.quantity}<div className="mt-2 flex"><button type="button" className="stepper rounded-l border-l" onClick={()=>setQuantity(Math.max(action==='set'?0:1,quantity-1))}><Icon name="minus" className="h-4 w-4" /></button><input className="input rounded-none text-center text-lg font-bold" type="number" min={action==='set'?0:1} max="999" value={quantity} onChange={e=>setQuantity(e.target.valueAsNumber)} /><button type="button" className="stepper rounded-r" onClick={()=>setQuantity(Math.min(999,quantity+1))}><Icon name="plus" className="h-4 w-4" /></button></div></label>
       <p className="text-xs text-neutral-500">{t.available}: <b>{current}</b> {t.spools}</p>
       {error&&<p className="error" role="alert">{error}</p>}
-      <div className="flex gap-3 border-t border-neutral-200 pt-5"><button type="button" className="secondary flex-1" onClick={onClose}>{t.cancel}</button><button className="primary flex-1" disabled={busy}>{busy?t.busy:t.continue}</button></div>
+      <div className="flex gap-3 border-t border-neutral-200 pt-5"><button type="button" className="secondary flex-1" onClick={onClose}>{t.close}</button><button className="primary flex-1" disabled={busy}>{busy?t.busy:t.continue}</button></div>
     </form>
   </section></div>
 }

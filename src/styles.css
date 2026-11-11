@@ -159,8 +159,8 @@ button:disabled { cursor:not-allowed; opacity:.45; }
   .language-switch button { min-height:34px; padding:0 9px; font-size:10px; }
   .login-button { width:38px; min-height:38px; padding:0; }
   .login-button span { display:none; }
-  .main-nav { height:44px; gap:20px; overflow:auto; }
-  .main-nav a { font-size:12px; }
+  .main-nav { height:44px; justify-content:space-between; gap:10px; overflow:auto; }
+  .main-nav a { flex:none; font-size:10px; }
   .main-shell,.main-shell.wide { padding:26px 16px 56px; }
   .action-grid { grid-template-columns:1fr; gap:10px; }
   .action-card { min-height:70px; padding:10px 14px; }
