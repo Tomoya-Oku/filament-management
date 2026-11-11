@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ApiError, loadInventory } from './api'
-import { formUrl, type Movement, type Stock } from './catalog'
+import { currentUser, isAdmin, loadCatalog, loadInventory, loadProcurementVotes, restoreSession, signOut, type AuthUser } from './api'
+import { fallbackCatalog, type Catalog, type Movement, type ProcurementVote, type Stock } from './catalog'
 import { detectLanguage, translations, type Language } from './i18n'
-import { Home } from './components/Home'
+import { Admin } from './components/Admin'
 import { EntryForm } from './components/EntryForm'
-import { Inventory } from './components/Inventory'
+import { Home } from './components/Home'
 import { Icon } from './components/Icon'
+import { Inventory } from './components/Inventory'
+import { Login } from './components/Login'
+import { Procurement } from './components/Procurement'
 
-const routes = ['home','inventory','add','use','transfer'] as const
+const routes = ['home','inventory','procurement','add','use','transfer','login','admin'] as const
 type Route = typeof routes[number]
 function readRoute(): Route { const value = window.location.hash.slice(1); return routes.includes(value as Route) ? value as Route : 'home' }
 
@@ -16,41 +19,38 @@ export default function App() {
   const [route, setRoute] = useState<Route>(readRoute)
   const [stock, setStock] = useState<Stock[]>([])
   const [movements, setMovements] = useState<Movement[]>([])
+  const [votes,setVotes] = useState<ProcurementVote[]>([])
+  const [catalog,setCatalog] = useState<Catalog>(fallbackCatalog)
+  const [user,setUser] = useState<AuthUser|null>(currentUser())
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<keyof typeof translations.ja | null>(null)
+  const [error, setError] = useState(false)
   const [updated, setUpdated] = useState<Date | null>(null)
   const t = translations[language]
   const refresh = useCallback(async () => {
-    setLoading(true); setError(null)
-    try { const value = await loadInventory(); setStock(value.stock); setMovements(value.movements); setUpdated(new Date()) }
-    catch (err) { setError(err instanceof ApiError ? err.code : 'error') }
+    setLoading(true); setError(false)
+    try { const [inventory,nextCatalog] = await Promise.all([loadInventory(),loadCatalog()]); setStock(inventory.stock); setMovements(inventory.movements); setCatalog(nextCatalog); setUpdated(new Date()) }
+    catch { setError(true) }
     finally { setLoading(false) }
   },[])
-  useEffect(() => { if (route !== 'home') void refresh() },[route,refresh])
+  const refreshVotes = useCallback(async () => { try { setVotes(await loadProcurementVotes()) } catch { setVotes([]) } },[])
+  useEffect(() => { void refresh(); void refreshVotes(); void restoreSession().then(setUser) },[refresh,refreshVotes])
   useEffect(() => {
     const changed = () => { setRoute(readRoute()); window.scrollTo(0,0) }
     window.addEventListener('hashchange',changed)
     return () => window.removeEventListener('hashchange',changed)
   },[])
-  useEffect(() => { document.documentElement.lang = language === 'zh' ? 'zh-CN' : language; localStorage.setItem('dragon-language',language) },[language])
-  useEffect(() => {
-    const focused = () => { if (route !== 'home') void refresh() }
-    window.addEventListener('focus',focused)
-    return () => window.removeEventListener('focus',focused)
-  },[route,refresh])
-  return <div className="flex min-h-screen flex-col bg-white text-neutral-900">
+  useEffect(() => { document.documentElement.lang = language === 'zh' ? 'zh-CN' : language; localStorage.setItem('filament-language',language) },[language])
+  const nav = ['home','inventory','procurement'] as const
+  return <div className="min-h-screen bg-white text-neutral-950">
     <a href="#main-content" onClick={event => { event.preventDefault(); document.getElementById('main-content')?.focus() }} className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:bg-white focus:p-3">{t.forms}</a>
-    <header className="border-b border-neutral-200"><div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 px-5 sm:px-8">
-      <a href="#home" aria-label="DRAGON Lab Filament Management" className="py-5"><span className="block text-[21px] font-bold leading-6 tracking-tight">DRAGON Lab</span><span className="text-xs text-neutral-500">Filament Management</span></a>
-      <nav className="order-3 flex w-full items-center gap-7 border-t border-neutral-100 sm:order-none sm:w-auto sm:border-0" aria-label={t.home}>{(['home','inventory'] as const).map(r => <a href={`#${r}`} aria-current={route === r ? 'page' : undefined} key={r} className={`border-b-2 py-4 text-sm ${route === r ? 'border-black font-semibold' : 'border-transparent text-neutral-500 hover:text-black'}`}>{t[r]}</a>)}</nav>
-      <div className="flex items-center gap-2 sm:gap-4"><select aria-label="Language / 言語 / 语言" className="min-h-11 bg-white text-xs sm:text-sm" value={language} onChange={e => setLanguage(e.target.value as Language)}><option value="ja">日本語</option><option value="en">English</option><option value="zh">中文</option></select></div>
+    <header className="app-header"><div className="header-inner">
+      <a href="#home" aria-label="Filament Management" className="brand"><img src="/filament-dragon-icon.png" alt="" /><span>Filament Management</span></a>
+      <nav className="main-nav" aria-label={t.home}>{nav.map(r => <a href={`#${r}`} aria-current={route === r ? 'page' : undefined} key={r}>{t[r]}</a>)}</nav>
+      <div className="header-actions"><div className="language-switch" role="group" aria-label={t.language}>{(['ja','en','zh'] as const).map(code => <button aria-pressed={language===code} onClick={()=>setLanguage(code)} key={code}>{code==='ja'?'日本語':code==='en'?'EN':'中文'}</button>)}</div>{isAdmin(user)&&<a className="icon-button" href="#admin" aria-label={t.admin}><Icon name="settings" className="h-5 w-5" /></a>}{user?<button className="login-button" onClick={()=>void signOut().then(()=>{setUser(null); location.hash='home'})}><Icon name="user" className="h-4 w-4" /><span>{t.signOut}</span></button>:<a className="login-button" href="#login"><Icon name="user" className="h-4 w-4" /><span>{t.signIn}</span></a>}</div>
     </div></header>
-    <main id="main-content" tabIndex={-1} className={`mx-auto w-full flex-1 px-5 py-8 outline-none sm:px-8 sm:py-10 ${route === 'inventory' ? 'max-w-6xl' : 'max-w-4xl'}`}>
-      {route === 'home' ? <Home t={t} /> : <>
-        {error && <div role="alert" className="error mb-6 flex flex-wrap items-center justify-between gap-3"><p>{t[error]}</p><button className="secondary" onClick={() => void refresh()}>{t.retry}</button></div>}
-        {loading && !updated ? <p role="status" className="py-16 text-center text-neutral-500">{t.loading}</p> : error && !updated ? null : route === 'inventory' ? <Inventory t={t} language={language} stock={stock} movements={movements} updated={updated} refresh={() => void refresh()} loading={loading} /> : route === 'add' || route === 'use' || route === 'transfer' ? <EntryForm key={route} kind={route} t={t} language={language} stock={stock} onSaved={refresh} /> : null}
-      </>}
+    <main id="main-content" tabIndex={-1} className={`main-shell ${route==='inventory'||route==='admin'?'wide':''}`}>
+      {error && <div role="alert" className="error mb-6 flex items-center justify-between gap-3"><p>{t.error}</p><button className="secondary" onClick={()=>void refresh()}>{t.retry}</button></div>}
+      {loading && !updated ? <p role="status" className="py-16 text-center text-neutral-500">{t.loading}</p> : route==='home' ? <Home t={t} language={language} stock={stock} catalog={catalog} /> : route==='inventory' ? <Inventory t={t} language={language} stock={stock} movements={movements} updated={updated} refresh={()=>void refresh()} loading={loading} catalog={catalog} /> : route==='procurement' ? <Procurement t={t} language={language} catalog={catalog} votes={votes} onSaved={refreshVotes} /> : route==='login' ? <Login t={t} onSignedIn={value=>{setUser(value); location.hash=isAdmin(value)?'admin':'home'}} /> : route==='admin' ? <Admin t={t} user={user} catalog={catalog} refresh={async()=>{setCatalog(await loadCatalog())}} /> : <EntryForm key={route} kind={route} t={t} language={language} stock={stock} catalog={catalog} onSaved={refresh} />}
     </main>
-    <footer className="mt-12 border-t border-neutral-200"><div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-6 text-xs text-neutral-500 sm:px-8"><p>DRAGON Lab <span className="mx-2">/</span> {t.footer}</p><a href={formUrl} target="_blank" rel="noreferrer" className="external-link"><Icon name="external" className="h-3 w-3" />{t.originalForm}</a></div></footer>
   </div>
 }

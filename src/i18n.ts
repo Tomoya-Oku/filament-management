@@ -1,49 +1,40 @@
 export type Language = 'ja' | 'en' | 'zh'
+
 const ja = {
-  home:'ホーム', inventory:'在庫管理表', forms:'入力フォーム',
-  headline:'フィラメントを、スムーズに管理。', intro:'研究室の3Dプリンター用フィラメントの在庫を、追加・使い切り・居室間の移動まで、シンプルに記録・管理できます。',
-  inventoryDesc:'全居室のフィラメント在庫を確認', sheets:'Google Sheetsで開く', originalForm:'従来のGoogleフォーム',
-  add:'フィラメント在庫追加', use:'フィラメント使い切り', transfer:'フィラメント居室間移動',
-  addDesc:'新しいフィラメントを在庫に追加します。', useDesc:'フィラメントを使い切ったことを記録します。', transferDesc:'フィラメントを別の居室へ移動したことを記録します。',
-  room:'居室', from:'移動元の居室', to:'移動先の居室', material:'材料（マテリアル）', quantity:'数量（スプール）', color:'カラー',
-  colorHelp:'Bambu公式の共通スプール写真と色見本から選択します。写真は各色の実物ではなく、実際の色は素材により異なります。', search:'色名で検索',
-  submit:'内容を確認', confirm:'この内容で登録する', cancel:'戻って修正', confirmTitle:'登録内容の確認', busy:'登録しています…',
+  home:'ホーム', inventory:'在庫管理表', procurement:'調達アンケート', admin:'管理者', forms:'入力フォーム',
+  add:'在庫を追加', use:'使い切りを記録', transfer:'居室間を移動',
+  room:'居室', from:'移動元の居室', to:'移動先の居室', material:'フィラメントの種類', quantity:'数量（スプール）', color:'カラー',
+  search:'色名で検索', submit:'内容を確認', confirm:'この内容で登録する', cancel:'修正', confirmTitle:'登録内容の確認', busy:'登録しています…',
+  colorHelp:'大きな色見本から選択してください。実際の色は素材や製造ロットにより異なる場合があります。', notConfigured:'接続設定がありません。',
   success:'登録しました。在庫に反映されています。', next:'続けて入力', viewStock:'在庫を確認',
-  selectColor:'カラーを選択してください。', chooseTo:'移動先を選択', sameRoom:'移動元と移動先は別の居室を選択してください。', invalidQuantity:'数量は1〜999の整数で入力してください。',
-  insufficient:'在庫が不足しています。最新の在庫数を確認してください。', available:'現在の在庫', spools:'個',
-  all:'全居室', allMaterials:'すべての材料', inStock:'在庫がある色のみ', total:'合計', noStock:'在庫はまだ登録されていません。実数を「在庫追加」から登録してください。',
+  selectColor:'カラーを選択してください。', chooseTo:'移動先を選択', sameRoom:'移動元と移動先は別の居室を選択してください。', invalidQuantity:'数量は1〜999の整数で入力してください。', invalidCombination:'この種類とカラーの組み合わせはBambu公式では販売されていません。',
+  insufficient:'在庫が不足しています。最新の在庫数を確認してください。', available:'現在の在庫', spools:'個', selectedColor:'選択中のカラー',
+  all:'全居室', allMaterials:'すべての種類', inStock:'在庫がある色のみ', total:'合計', noStock:'在庫はまだ登録されていません。',
   updated:'取得日時', refresh:'更新', loading:'読み込み中…', error:'通信に失敗しました。接続を確認して再度お試しください。', retry:'再試行',
-  signIn:'ログイン', signOut:'ログアウト', email:'メールアドレス', password:'パスワード',
-  loginTitle:'研究室の在庫にアクセス', loginHelp:'管理者が登録した研究室メンバーのアカウントでログインしてください。', loginError:'ログインできませんでした。メールアドレスとパスワードを確認してください。',
-  memberOnly:'在庫の閲覧・変更は研究室メンバー限定です。管理者へアカウント登録をご依頼ください。',
-  notMember:'このアカウントには研究室の利用権限がありません。管理者にご連絡ください。', sessionExpired:'ログインの有効期限が切れました。もう一度ログインしてください。',
-  notConfigured:'接続設定がありません。管理者にご連絡ください。', history:'最近の操作', noHistory:'操作履歴はまだありません。',
-  back:'ホームに戻る', official:'画像出典：Bambu Lab公式ストア', noImage:'色見本', supportHelp:'Supportのカラーは「該当なし」に固定されます。',
-  footer:'研究室で共有する、小さな在庫管理。', loginBusy:'ログイン中…', readOnly:'未ログイン', confirmationHelp:'送信すると研究室の共有在庫に反映されます。',
+  signIn:'ログイン', signOut:'ログアウト', signedOut:'未ログイン', email:'メールアドレス', password:'パスワード', loginTitle:'管理者ログイン', loginHelp:'通常の在庫管理はログイン不要です。管理者ページは @dragon.t.u-tokyo.ac.jp のアカウントのみ利用できます。', loginError:'ログインできませんでした。メールアドレスとパスワードを確認してください。', loginBusy:'ログイン中…',
+  history:'最近の操作', noHistory:'操作履歴はまだありません。', back:'ホームに戻る', official:'Bambu公式で見る', supportHelp:'Supportのカラーは「該当なし」に固定されます。', confirmationHelp:'送信すると研究室の共有在庫に反映されます。',
+  procurementTitle:'次に購入してほしいフィラメント', procurementHelp:'希望する種類・カラー・数量を投票できます。', vote:'投票する', voted:'投票を受け付けました。', surveyResults:'現在の希望',
+  adminTitle:'マスターデータ管理', adminHelp:'居室、種類、カラー、公式の組み合わせを変更できます。', adminOnly:'管理者権限がありません。@dragon.t.u-tokyo.ac.jp のアカウントでログインしてください。', addItem:'追加', deactivate:'無効化', combinations:'公式の組み合わせ', availableCombination:'入力可能', unavailable:'取扱なし',
+  language:'表示言語', purchase:'購入ページ',
 } as const
+
 type Copy = { [K in keyof typeof ja]: string }
+
 const en: Copy = {
-  home:'Home', inventory:'Inventory', forms:'Entry forms', headline:'Filament, simply managed.', intro:'Keep track of the lab’s 3D printing filament. Record new stock, used-up spools, and transfers between rooms in one place.', inventoryDesc:'Check filament stock across all rooms', sheets:'Open in Google Sheets', originalForm:'Original Google Form',
-  add:'Add filament stock',use:'Use up filament',transfer:'Transfer between rooms',addDesc:'Add new filament spools to the inventory.',useDesc:'Record filament spools that have been used up.',transferDesc:'Record filament moved to another room.',
-  room:'Room',from:'From room',to:'To room',material:'Material',quantity:'Quantity (spools)',color:'Color',colorHelp:'Choose using the shared official Bambu spool photo and color swatches. The photo does not depict each color; appearance varies by material.',search:'Search colors',
-  submit:'Review entry',confirm:'Confirm and save',cancel:'Back to edit',confirmTitle:'Review your entry',busy:'Saving…',success:'Saved. The inventory has been updated.',next:'Add another entry',viewStock:'View inventory',selectColor:'Please select a color.',chooseTo:'Select destination',sameRoom:'Please choose different source and destination rooms.',invalidQuantity:'Enter a whole number from 1 to 999.',insufficient:'Not enough stock. Please check the latest inventory.',available:'Available stock',spools:'spools',
-  all:'All rooms',allMaterials:'All materials',inStock:'Only colors in stock',total:'Total',noStock:'No stock recorded yet. Add the actual quantities using “Add filament stock”.',updated:'Retrieved',refresh:'Refresh',loading:'Loading…',error:'Connection failed. Check your connection and try again.',retry:'Try again',
-  signIn:'Sign in',signOut:'Sign out',email:'Email',password:'Password',loginTitle:'Access the lab inventory',loginHelp:'Sign in with the lab member account registered by your administrator.',loginError:'Sign-in failed. Check your email and password.',memberOnly:'Inventory is available to lab members. Ask your administrator to register an account.',notMember:'This account does not have lab access. Please contact your administrator.',sessionExpired:'Your session has expired. Please sign in again.',notConfigured:'Connection is not configured. Please contact your administrator.',history:'Recent activity',noHistory:'No activity yet.',back:'Back to home',official:'Photos: Bambu Lab official store',noImage:'Color swatch',supportHelp:'Support filament uses “N/A (Support)” as its color.',footer:'A small inventory, shared by the lab.',loginBusy:'Signing in…',readOnly:'Signed out',confirmationHelp:'Saving this entry updates the lab’s shared inventory.',
+  home:'Home', inventory:'Inventory', procurement:'Procurement survey', admin:'Admin', forms:'Entry forms', add:'Add stock', use:'Record used spool', transfer:'Move between rooms', room:'Room', from:'From room', to:'To room', material:'Filament type', quantity:'Quantity (spools)', color:'Color', search:'Search colors', submit:'Review entry', confirm:'Confirm and save', cancel:'Edit', confirmTitle:'Review your entry', busy:'Saving…', colorHelp:'Choose from the large color swatches. Appearance can vary by material and production lot.', notConfigured:'Connection is not configured.', success:'Saved. Inventory is up to date.', next:'Add another', viewStock:'View inventory', selectColor:'Select a color.', chooseTo:'Select destination', sameRoom:'Choose different source and destination rooms.', invalidQuantity:'Enter a whole number from 1 to 999.', invalidCombination:'Bambu does not offer this material and color combination.', insufficient:'Not enough stock. Check the latest inventory.', available:'Available', spools:'spools', selectedColor:'Selected color', all:'All rooms', allMaterials:'All types', inStock:'Only colors in stock', total:'Total', noStock:'No stock has been recorded yet.', updated:'Retrieved', refresh:'Refresh', loading:'Loading…', error:'Connection failed. Check your connection and try again.', retry:'Try again', signIn:'Sign in', signOut:'Sign out', signedOut:'Signed out', email:'Email', password:'Password', loginTitle:'Administrator sign in', loginHelp:'Inventory is available without signing in. Admin is limited to @dragon.t.u-tokyo.ac.jp accounts.', loginError:'Sign-in failed. Check your email and password.', loginBusy:'Signing in…', history:'Recent activity', noHistory:'No activity yet.', back:'Back to home', official:'View on Bambu', supportHelp:'Support filament uses “N/A” as its color.', confirmationHelp:'Saving updates the shared lab inventory.', procurementTitle:'Filament requested for the next order', procurementHelp:'Vote for a filament type, color, and quantity.', vote:'Vote', voted:'Your vote was recorded.', surveyResults:'Current requests', adminTitle:'Master data', adminHelp:'Manage rooms, filament types, colors, and official combinations.', adminOnly:'Administrator access required. Sign in with an @dragon.t.u-tokyo.ac.jp account.', addItem:'Add', deactivate:'Deactivate', combinations:'Official combinations', availableCombination:'Enabled', unavailable:'Not offered', language:'Language', purchase:'Purchase page',
 }
+
 const zh: Copy = {
-  home:'首页',inventory:'库存管理表',forms:'录入表单',headline:'轻松管理每一卷耗材。',intro:'集中记录实验室3D打印耗材的入库、用尽和房间间转移，让库存管理更简单。',inventoryDesc:'查看所有房间的耗材库存',sheets:'在Google Sheets中打开',originalForm:'原Google表单',
-  add:'添加耗材库存',use:'耗材用尽',transfer:'房间间转移耗材',addDesc:'将新的耗材卷添加到库存。',useDesc:'记录已用尽的耗材卷。',transferDesc:'记录转移到其他房间的耗材。',
-  room:'房间',from:'来源房间',to:'目标房间',material:'材料',quantity:'数量（卷）',color:'颜色',colorHelp:'通过拓竹官方通用料盘照片和色卡选择。照片并非各颜色实物，不同材料的实际颜色可能不同。',search:'搜索颜色',submit:'确认内容',confirm:'确认并保存',cancel:'返回修改',confirmTitle:'确认录入内容',busy:'正在保存…',success:'保存成功，库存已更新。',next:'继续录入',viewStock:'查看库存',selectColor:'请选择颜色。',chooseTo:'选择目标房间',sameRoom:'来源房间和目标房间不能相同。',invalidQuantity:'请输入1至999之间的整数。',insufficient:'库存不足，请查看最新库存。',available:'当前库存',spools:'卷',
-  all:'所有房间',allMaterials:'所有材料',inStock:'仅显示有库存的颜色',total:'合计',noStock:'尚未录入库存，请通过“添加耗材库存”登记实际数量。',updated:'获取时间',refresh:'刷新',loading:'加载中…',error:'连接失败，请检查网络后重试。',retry:'重试',signIn:'登录',signOut:'退出',email:'电子邮箱',password:'密码',loginTitle:'访问实验室库存',loginHelp:'请使用管理员登记的实验室成员账号登录。',loginError:'登录失败，请检查邮箱和密码。',memberOnly:'库存仅供实验室成员查看和修改，请联系管理员注册账号。',notMember:'此账号没有实验室访问权限，请联系管理员。',sessionExpired:'登录已过期，请重新登录。',notConfigured:'尚未配置连接，请联系管理员。',history:'最近操作',noHistory:'暂无操作记录。',back:'返回首页',official:'图片来源：拓竹官方商店',noImage:'色卡',supportHelp:'支撑材料的颜色固定为“不适用（支撑）”。',footer:'实验室共享的轻量库存管理。',loginBusy:'正在登录…',readOnly:'未登录',confirmationHelp:'保存后将更新实验室的共享库存。',
+  home:'首页', inventory:'库存管理表', procurement:'采购问卷', admin:'管理员', forms:'录入表单', add:'添加库存', use:'记录用尽', transfer:'房间间转移', room:'房间', from:'来源房间', to:'目标房间', material:'耗材类型', quantity:'数量（卷）', color:'颜色', search:'搜索颜色', submit:'确认内容', confirm:'确认并保存', cancel:'修改', confirmTitle:'确认录入内容', busy:'正在保存…', colorHelp:'请从大色卡中选择。实际颜色可能因材料和生产批次而异。', notConfigured:'尚未配置连接。', success:'保存成功，库存已更新。', next:'继续录入', viewStock:'查看库存', selectColor:'请选择颜色。', chooseTo:'选择目标房间', sameRoom:'来源房间和目标房间不能相同。', invalidQuantity:'请输入1至999之间的整数。', invalidCombination:'拓竹官方未提供此材料和颜色组合。', insufficient:'库存不足，请查看最新库存。', available:'当前库存', spools:'卷', selectedColor:'已选颜色', all:'所有房间', allMaterials:'所有类型', inStock:'仅显示有库存的颜色', total:'合计', noStock:'尚未录入库存。', updated:'获取时间', refresh:'刷新', loading:'加载中…', error:'连接失败，请检查网络后重试。', retry:'重试', signIn:'登录', signOut:'退出', signedOut:'未登录', email:'电子邮箱', password:'密码', loginTitle:'管理员登录', loginHelp:'普通库存管理无需登录。管理员页面仅限 @dragon.t.u-tokyo.ac.jp 账号。', loginError:'登录失败，请检查邮箱和密码。', loginBusy:'正在登录…', history:'最近操作', noHistory:'暂无操作记录。', back:'返回首页', official:'在拓竹官网查看', supportHelp:'支撑材料的颜色固定为“不适用”。', confirmationHelp:'保存后将更新实验室共享库存。', procurementTitle:'下次希望采购的耗材', procurementHelp:'可投票选择耗材类型、颜色和数量。', vote:'投票', voted:'投票已记录。', surveyResults:'当前需求', adminTitle:'主数据管理', adminHelp:'管理房间、耗材类型、颜色和官方组合。', adminOnly:'需要管理员权限。请使用 @dragon.t.u-tokyo.ac.jp 账号登录。', addItem:'添加', deactivate:'停用', combinations:'官方组合', availableCombination:'可录入', unavailable:'无此产品', language:'显示语言', purchase:'购买页面',
 }
+
 export const translations = { ja, en, zh }
+
 export function detectLanguage(): Language {
-  const saved = localStorage.getItem('dragon-language')
+  const saved = localStorage.getItem('filament-language')
   if (saved === 'ja' || saved === 'en' || saved === 'zh') return saved
-  for (const value of navigator.languages) {
-    const code = value.split('-')[0]
-    if (code === 'ja' || code === 'en' || code === 'zh') return code
-  }
-  return 'en'
+  const code = navigator.language.split('-')[0]
+  return code === 'ja' || code === 'en' || code === 'zh' ? code : 'ja'
 }
+
 export type Text = Copy

@@ -4,9 +4,10 @@ export type Operation = 'add' | 'use' | 'transfer'
 export type Stock = { room: string; material: string; color: string; quantity: number }
 export type Movement = { id: string; kind: Operation; room: string; destination: string | null; material: string; color: string; quantity: number; created_at: string }
 export type Entry = { kind: Operation; room: string; destination: string; material: string; color: string; quantity: number }
-export type Color = { id: string; hex: string; ja: string; en: string; zh: string; image: string | null }
-const color = (id: string, hex: string, ja: string, en: string, zh: string): Color => ({ id, hex, ja, en, zh, image: id === 'N/A' || id === 'CLEAR' ? null : '/images/bambu-pla-basic-spool.png' })
-// The official spool photo is shared; the separate swatch identifies the color without recoloring the manufacturer's photograph.
+export type Color = { id: string; hex: string; ja: string; en: string; zh: string; image?: string | null }
+export type Catalog = { rooms: string[]; materials: string[]; colors: Color[]; unavailable: string[] }
+export type ProcurementVote = { id: string; material: string; color: string; quantity: number; created_at: string }
+const color = (id: string, hex: string, ja: string, en: string, zh: string): Color => ({ id, hex, ja, en, zh })
 export const colors: Color[] = [
   color('Maroon RED','#9d2235','マルーンレッド','Maroon red','栗红色'),
   color('RED','#c12e1f','レッド','Red','红色'),
@@ -41,6 +42,36 @@ export const colors: Color[] = [
   color('CLEAR','#f4f5f5','クリア','Clear','透明'),
   color('N/A','#dddddd','該当なし（サポート）','N/A (Support)','不适用（支撑）'),
 ]
-export const sheetUrl = 'https://docs.google.com/spreadsheets/d/1X_AY94A3bmVuqEtZS31nuR3lj3thFaq8-rW4c_TqAyI/edit?gid=46801638#gid=46801638'
-export const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSevSuhVjXQx09PCKcCK8fSJb2ck4LihBtQv0ckAknoDnyKnmw/viewform'
 export const officialUrl = 'https://jp.store.bambulab.com/products/pla-basic-filament'
+
+// Bambu's catalog does not offer every color for every engineering material.
+// The database-backed admin page can override these defaults without a deploy.
+const restricted: Record<string, string[]> = {
+  'PLA CF': ['BLACK','BLUE','RED','GREEN','BURGUNDY','LAVA GRAY'].filter(id => colors.some(c => c.id === id)),
+  'PA6-CF': ['BLACK'],
+  'PLA Silk': ['GOLD','SILVER','BRONZE','BLUE','PURPLE','PINK','RED','GREEN','ORANGE'],
+  'PLA Glow': ['GREEN','YELLOW','PINK','BLUE'],
+  'ABS': ['BLACK','WHITE','GRAY','RED','BLUE','GREEN','ORANGE','YELLOW'],
+  'PC': ['BLACK','WHITE','CLEAR'],
+  'TPU': ['BLACK','WHITE','GRAY','RED','BLUE','GREEN','YELLOW'],
+  'Support': ['N/A'],
+}
+
+export const fallbackCatalog: Catalog = {
+  rooms: [...rooms],
+  materials: [...materials],
+  colors,
+  unavailable: Object.entries(restricted).flatMap(([material, available]) =>
+    colors.filter(c => !available.includes(c.id)).map(c => `${material}::${c.id}`),
+  ),
+}
+
+export function isCombinationAvailable(catalog: Catalog, material: string, colorId: string) {
+  return !catalog.unavailable.includes(`${material}::${colorId}`)
+}
+
+export function productUrl(material: string) {
+  return material.startsWith('UP300') || material === 'PLA+' || material === 'ePA-CF' || material === 'Support'
+    ? null
+    : `https://jp.store.bambulab.com/search?q=${encodeURIComponent(material)}&type=product`
+}

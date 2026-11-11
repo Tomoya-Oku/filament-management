@@ -1,28 +1,24 @@
-import { colors, sheetUrl, officialUrl } from '../catalog'
-import type { Text } from '../i18n'
+import { isCombinationAvailable, type Catalog, type Stock } from '../catalog'
+import type { Language, Text } from '../i18n'
 import { Icon } from './Icon'
-import { SpoolImage } from './SpoolImage'
 
-export function Home({ t }: { t: Text }) {
+const actions = [
+  { kind:'add', icon:'addStock' },
+  { kind:'use', icon:'used' },
+  { kind:'transfer', icon:'move' },
+] as const
+
+export function Home({ t, language, stock, catalog }: { t: Text; language: Language; stock: Stock[]; catalog: Catalog }) {
+  const previewMaterials = catalog.materials.slice(0,3)
+  const previewColors = catalog.colors.filter(c => previewMaterials.some(m => stock.some(s => s.material === m && s.color === c.id))).slice(0,6)
+  const rows = previewColors.length ? previewColors : catalog.colors.slice(0,6)
+  const amount = (color:string,material:string) => stock.filter(s => s.color === color && s.material === material).reduce((n,s) => n+s.quantity,0)
   return <>
-    <section className="pb-10 pt-5 sm:pb-12 sm:pt-10">
-      <h1 className="max-w-4xl text-[2rem] font-bold leading-tight tracking-tight sm:text-[2.65rem]">{t.headline}</h1>
-      <p className="mt-5 max-w-2xl text-[15px] leading-8 text-neutral-600 sm:text-base">{t.intro}</p>
-    </section>
-    <a href="#inventory" className="inventory-link group flex items-center gap-5 rounded border border-neutral-300 px-5 py-6 transition hover:border-black sm:px-7">
-      <Icon name="table" className="h-8 w-8" /><div><h2 className="text-xl font-bold sm:text-2xl">{t.inventory}</h2><p className="mt-1 text-sm text-neutral-500">{t.inventoryDesc}</p></div><Icon name="arrow" className="ml-auto transition group-hover:translate-x-1" />
-    </a>
-    <a href={sheetUrl} target="_blank" rel="noreferrer" className="external-link mt-3"><Icon name="external" className="h-4 w-4" />{t.sheets}</a>
-    <section className="mt-10 sm:mt-12">
-      <h2 className="mb-4 border-b border-neutral-200 pb-4 text-xl font-bold sm:text-2xl">{t.forms}</h2>
-      <div className="space-y-3">{(['add','use','transfer'] as const).map((kind, i) => <a key={kind} href={`#${kind}`} className="group flex min-h-24 items-center gap-4 rounded border border-neutral-200 px-4 py-4 transition hover:border-black sm:gap-6 sm:px-7">
-        <span className="text-xl font-semibold tabular-nums sm:text-2xl">0{i + 1}</span>
-        <span className="hidden border-l border-neutral-200 pl-6 sm:block"><Icon name={['plus','minus','swap'][i]} className="h-8 w-8" /></span>
-        <div className="min-w-0"><h3 className="text-base font-bold sm:text-lg">{t[kind]}</h3><p className="mt-1 text-xs leading-5 text-neutral-500 sm:text-sm">{t[`${kind}Desc`]}</p></div>
-        <Icon name="arrow" className="ml-auto h-5 w-5 transition group-hover:translate-x-1" />
-      </a>)}</div>
-    </section>
-    <div className="mx-auto mt-6 flex max-w-xl items-center justify-center gap-2 sm:gap-8" aria-hidden="true">{['WHITE','BLACK','RED'].map(id => <div className="w-1/3" key={id}><SpoolImage color={colors.find(c => c.id === id)!} large /></div>)}</div>
-    <a className="external-link justify-center text-xs" href={officialUrl} target="_blank" rel="noreferrer">{t.official}<Icon name="external" className="h-3 w-3" /></a>
+    <h1 className="page-title">{t.home}</h1>
+    <section className="action-grid mt-6">{actions.map(action => <a href={`#${action.kind}`} key={action.kind} className="action-card group"><span className="action-icon"><Icon name={action.icon} className="h-8 w-8" /></span><strong>{t[action.kind]}</strong><Icon name="arrow" className="ml-auto h-5 w-5 transition group-hover:translate-x-1" /></a>)}</section>
+    <div className="dashboard-grid mt-8">
+      <section className="dashboard-panel min-w-0"><div className="panel-heading"><h2 className="section-title">{t.inventory}</h2><a className="text-link" href="#inventory">{t.viewStock}<Icon name="arrow" className="h-4 w-4" /></a></div><div className="mt-5 overflow-auto rounded-lg border border-neutral-200"><table className="w-full min-w-[500px] border-collapse text-sm"><thead><tr><th className="bg-neutral-100 px-4 py-3 text-left">{t.color}</th>{previewMaterials.map(m => <th className="bg-neutral-100 px-3 py-3" key={m}>{m}</th>)}</tr></thead><tbody>{rows.map(c => <tr className="border-t border-neutral-200" key={c.id}><th className="px-4 py-3 text-left"><span className="flex items-center gap-3"><span className="h-7 w-7 rounded-full border border-black/10" style={{backgroundColor:c.hex}} />{c[language]}</span></th>{previewMaterials.map(m => {const available=isCombinationAvailable(catalog,m,c.id); const value=amount(c.id,m); return <td className={`px-3 py-3 text-center font-bold ${!available?'stock-na':value===0?'stock-zero':value<3?'stock-low':value<6?'stock-medium':'stock-good'}`} key={m}>{available?value:'—'}</td>})}</tr>)}</tbody></table></div></section>
+      <section className="dashboard-panel survey-teaser"><div className="panel-heading"><h2 className="section-title">{t.procurement}</h2><Icon name="vote" className="h-6 w-6 text-red-700" /></div><div className="survey-graphic" aria-hidden="true">{catalog.colors.slice(0,8).map(c => <span key={c.id} style={{backgroundColor:c.hex}} />)}</div><a className="primary mt-auto w-full" href="#procurement"><Icon name="vote" className="h-5 w-5" />{t.vote}</a></section>
+    </div>
   </>
 }
