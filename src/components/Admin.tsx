@@ -4,20 +4,20 @@ import { isCombinationAvailable, type Catalog } from '../catalog'
 import type { Text } from '../i18n'
 import { Icon } from './Icon'
 
-export function Admin({ t, user, catalog, refresh }: { t: Text; user: AuthUser | null; catalog: Catalog; refresh: () => Promise<void> }) {
+export function Admin({ t, user, catalog, refresh, onSignOut }: { t: Text; user: AuthUser | null; catalog: Catalog; refresh: () => Promise<void>; onSignOut:()=>Promise<void> }) {
   const [room,setRoom] = useState('')
   const [material,setMaterial] = useState('')
   const [officialUrl,setOfficialUrl] = useState('')
   const [color,setColor] = useState({name:'',hex:'#c52a2f',ja:'',en:'',zh:''})
   const [matrixMaterial,setMatrixMaterial] = useState(catalog.materials[0] ?? '')
   const [message,setMessage] = useState('')
-  if (!isAdmin(user)) return <div className="mx-auto max-w-xl pt-10 text-center"><Icon name="lock" className="mx-auto h-12 w-12 text-red-700" /><h1 className="page-title mt-5">{t.adminTitle}</h1><p className="mt-4 text-sm leading-7 text-neutral-600">{t.adminOnly}</p><a className="primary mt-7" href="#login">{t.signIn}</a></div>
+  if (!isAdmin(user)) return null
   async function run(task: () => Promise<void>) { setMessage(''); try { await task(); await refresh(); setMessage('保存しました') } catch { setMessage(t.error) } }
   async function addRoom(event:FormEvent) { event.preventDefault(); await run(() => addCatalogItem('room',{code:room})); setRoom('') }
   async function addMaterial(event:FormEvent) { event.preventDefault(); await run(() => addCatalogItem('material',{name:material,official_url:officialUrl||null})); setMaterial(''); setOfficialUrl('') }
   async function addColor(event:FormEvent) { event.preventDefault(); await run(() => addCatalogItem('color',{name:color.name,hex:color.hex,label_ja:color.ja||color.name,label_en:color.en||color.name,label_zh:color.zh||color.name})); setColor({name:'',hex:'#c52a2f',ja:'',en:'',zh:''}) }
   return <div className="mx-auto max-w-6xl">
-    <div className="flex items-start gap-4"><span className="action-icon"><Icon name="settings" /></span><div><h1 className="page-title">{t.adminTitle}</h1><p className="mt-2 text-sm text-neutral-500">{t.adminHelp}</p></div></div>
+    <div className="flex items-start gap-4"><span className="action-icon"><Icon name="settings" /></span><div><h1 className="page-title">{t.adminTitle}</h1><p className="mt-2 text-sm text-neutral-500">{t.adminHelp}</p><p className="mt-1 text-xs text-neutral-400">{user?.email}</p></div><button className="secondary ml-auto" onClick={()=>void onSignOut()}>{t.signOut}</button></div>
     {message && <p className="notice mt-6" role="status">{message}</p>}
     <div className="mt-8 grid gap-6 lg:grid-cols-3">
       <section className="admin-section"><h2>{t.room}</h2><form className="mt-4 flex gap-2" onSubmit={addRoom}><input className="input" required value={room} onChange={e=>setRoom(e.target.value)} placeholder="例: 62C1" /><button className="primary">{t.addItem}</button></form><ul className="admin-list">{catalog.rooms.map(item=><li key={item}><span>{item}</span><button onClick={()=>void run(()=>setCatalogItemActive('room',item,false))}>{t.deactivate}</button></li>)}</ul></section>
