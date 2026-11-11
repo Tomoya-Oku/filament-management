@@ -44,7 +44,7 @@ export default function App() {
   return <div className="min-h-screen bg-white text-neutral-950">
     <a href="#main-content" onClick={event => { event.preventDefault(); document.getElementById('main-content')?.focus() }} className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:bg-white focus:p-3">{t.forms}</a>
     <header className="app-header"><div className="header-inner">
-      <a href="#home" aria-label="Filament Management" className="brand"><img src="/filament-dragon-icon.png" alt="" /><span>Filament Management</span></a>
+      <a href="#home" aria-label="FIILAGON" className="brand"><img src="/fiilagon-icon.svg" alt="" /><span>FIILAGON</span></a>
       <nav className="main-nav" aria-label={t.home}>{nav.map(r => <a href={`#${r}`} aria-current={route === r ? 'page' : undefined} key={r}>{t[r]}</a>)}</nav>
       <div className="header-actions"><div className="language-switch" role="group" aria-label={t.language}>{(['ja','en','zh'] as const).map(code => <button aria-pressed={language===code} onClick={()=>setLanguage(code)} key={code}>{code==='ja'?'日本語':code==='en'?'EN':'中文'}</button>)}</div>{isAdmin(user)&&<a className="icon-button" href="#admin" aria-label={t.admin}><Icon name="settings" className="h-5 w-5" /></a>}{user?<button className="login-button" onClick={()=>void signOut().then(()=>{setUser(null); location.hash='home'})}><Icon name="user" className="h-4 w-4" /><span>{t.signOut}</span></button>:<a className="login-button" href="#login"><Icon name="user" className="h-4 w-4" /><span>{t.signIn}</span></a>}</div>
     </div></header>

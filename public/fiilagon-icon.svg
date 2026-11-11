@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="FIILAGON">
+  <path fill="#111111" d="M17 66c0-25 14-45 37-54l-3 11 12-15 2 13 14-10-2 13c14 3 26 12 33 25l-16-4 10 12-14 1 7 12-18-5c-4-1-7-4-8-8l-2-8-8 5 4 10-10-4-3 13-8-12-12 10 2-17-17 12Z"/>
+  <path fill="#FFFFFF" d="M82 37l8 4-9 3-6-4 7-3Z"/>
+  <path fill="#111111" fill-rule="evenodd" d="M29 55h10V45h12v10h10V45h12v10h10V45h12v10h10v56H85V77H43v34H29V55Zm42 9H53v8h18v-8Zm12 0v8h14v-8H83Z" clip-rule="evenodd"/>
+  <path fill="#FFFFFF" d="M47 81h34v30H47z"/>
+  <path fill="#111111" d="M57 60h18v10H57zM62 70h8v12h-8z"/>
+  <path fill="#B91C1C" d="M11 88c0-8 6-14 14-14h13c8 0 14 6 14 14v18c0 8-6 14-14 14H25c-8 0-14-6-14-14V88Zm10 0v18c0 3 2 5 5 5h11c3 0 5-2 5-5V88c0-3-2-5-5-5H26c-3 0-5 2-5 5Z"/>
+  <path fill="#B91C1C" d="M27 82h4v30h-4zM34 82h4v30h-4zM48 91h24v6H48zM69 86h6v11h-6z"/>
+</svg>
