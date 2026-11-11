@@ -1,4 +1,4 @@
-# DRAGON Lab Filament Management
+# FILAGON
 
 研究室のフィラメント（スプール）を、居室・材料・色ごとに共有管理するWebアプリです。
 

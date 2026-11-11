@@ -33,7 +33,7 @@ const zh: Copy = {
 export const translations = { ja, en, zh }
 
 export function detectLanguage(): Language {
-  const saved = localStorage.getItem('filament-language')
+  const saved = localStorage.getItem('filagon-language')
   if (saved === 'ja' || saved === 'en' || saved === 'zh') return saved
   return 'en'
 }

@@ -40,12 +40,12 @@ export default function App() {
     window.addEventListener('hashchange',changed)
     return () => window.removeEventListener('hashchange',changed)
   },[])
-  useEffect(() => { document.documentElement.lang = language === 'zh' ? 'zh-CN' : language; localStorage.setItem('filament-language',language) },[language])
+  useEffect(() => { document.documentElement.lang = language === 'zh' ? 'zh-CN' : language; localStorage.setItem('filagon-language',language) },[language])
   const nav = ['home','history','inventory','procurement','admin'] as const
   return <div className="min-h-screen bg-white text-neutral-950">
     <a href="#main-content" onClick={event => { event.preventDefault(); document.getElementById('main-content')?.focus() }} className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:bg-white focus:p-3">{t.forms}</a>
     <header className="app-header"><div className="header-inner">
-      <a href="#home" aria-label="FIILAGON" className="brand"><img src="/fiilagon-icon.svg" alt="" /><span>FIILAGON</span></a>
+      <a href="#home" aria-label="FILAGON" className="brand"><img src="/filagon-icon.svg" alt="" /><span>FILAGON</span></a>
       <nav className="main-nav" aria-label={t.home}>{nav.map(r => <a href={`#${r}`} aria-current={route === r ? 'page' : undefined} key={r}>{t[r]}</a>)}</nav>
       <div className="header-actions"><div className="language-switch" role="group" aria-label={t.language}>{(['ja','en','zh'] as const).map(code => <button aria-pressed={language===code} onClick={()=>setLanguage(code)} key={code}>{code==='ja'?'日本語':code==='en'?'EN':'中文'}</button>)}</div></div>
     </div></header>
